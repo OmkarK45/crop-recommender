@@ -12,3 +12,4 @@ Pillow
 scikit-learn
 torch
 torchvision
+flask-cors
