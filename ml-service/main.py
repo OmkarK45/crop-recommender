@@ -169,22 +169,22 @@ def recommend_fertilizer():
 @app.route('/identify-disease', methods=['POST', "GET"])
 def identify_disease():
     if request.method == "POST":
-        print(request.files, request.headers)
+        print(request.files.get('file'))
         if "file" not in request.files:
-            return jsonify({"message": "No image upload found. Please double check if you have correctly uploaded file.", "status": "Bad Request"})
+            return jsonify({"message": "No image upload found. Please double check if you have correctly uploaded file.", "status": "BAD_REQUEST"})
 
         input_image_file = request.files['file']
         if not input_image_file:
-            return jsonify({"message": "No image upload found. Please double check if you have correctly uploaded file.", "status": "Bad Request"})
+            return jsonify({"message": "No image upload found. Please double check if you have correctly uploaded file.", "status": "BAD_REQUEST"})
         try:
             image = input_image_file.read()
 
             prediction = predict_image(image)
 
-            return jsonify({"status": "success", "prediction": prediction})
+            return jsonify({"status": "SUCCESS", "prediction": prediction})
         except Exception as e:
             print("ERROR", e)
-            return jsonify({"message": "Error in processing the image. Please try again.", "status": "Internal Server Error"})
+            return jsonify({"message": "Error in processing the image. Please try again.", "status": "INTERNAL_SERVER_ERROR"})
 
 
 def predict_image(img, model=disease_model):
