@@ -28,7 +28,7 @@ CORS(app)
     The model is loaded using the pickle module.
 """
 crop_recommendation_model = pickle.load(open('models/random-forest.pkl', 'rb'))
-
+yield_prediction_model = pickle.load(open('models/yield_new.pkl', 'rb'))
 """
     Importing the model [Disease Prediction Model]
     The model is saved as a pth file.
@@ -208,6 +208,28 @@ def predict_image(img, model=disease_model):
     prediction = disease_classes[preds[0].item()]
     # Retrieve the class label
     return prediction
+
+
+@app.route("/predict-yield", methods=['POST'])
+def predict_yield():
+    if request.method == 'POST':
+        data = request.get_json()
+        state_name = data['state_name']
+        crop = data['crop']
+        area = data['area']
+        soil_type = data['soil_type']
+        print(state_name, crop, area, soil_type)
+
+        pred_args = [state_name, crop, area, soil_type]
+        pred_args_arr = np.array(pred_args)
+        pred_args_arr = pred_args_arr.reshape(1, -1)
+        output = yield_prediction_model.predict(pred_args_arr)
+        print(output)
+        pred = format(int(output[0]))
+        Yield = int(pred) / float(area)
+        yields = Yield*1000
+        prediction_text = pred
+        return jsonify({"status": "success", "yield": yields, "production": prediction_text})
 
 
 if __name__ == '__main__':
